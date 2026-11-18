@@ -1,13 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="card">
-  <h2>Grabar una entrevista</h2>
-  <p>Subí el audio de una entrevista. Se transcribe en esta máquina; el audio no sale a ningún servidor.</p>
+  <h2>Antes de grabar</h2>
+  <p>Esta herramienta escucha a una persona contar su historia. Antes de empezar, leé esto en voz alta con ella:</p>
+  <ul>
+    <li>La grabación queda <strong>en esta computadora</strong>. No se sube a ningún servicio.</li>
+    <li>La transcripción es automática y puede tener errores. Ella puede corregir lo que quiera.</li>
+    <li>El texto final se lo lleva ella. Es su relato, no nuestro.</li>
+    <li>Se puede borrar todo en cualquier momento.</li>
+  </ul>
   <form action="/transcribe" method="post" enctype="multipart/form-data">
     <label for="file">Audio (wav, m4a, mp3)</label>
     <input type="file" id="file" name="file" accept=".wav,.m4a,.mp3,.aiff" required>
-    <label for="persona">Nombre de la persona (opcional)</label>
-    <input type="text" id="persona" name="persona" placeholder="Abuela Rosa">
+    <label for="persona">Nombre de la persona</label>
+    <input type="text" id="persona" name="persona" placeholder="Abuela Rosa" required>
+    <label style="display:flex;gap:.5rem;align-items:flex-start;margin-bottom:1rem;">
+      <input type="checkbox" name="consentimiento" value="1" required style="width:auto;margin-top:.25rem;">
+      <span>Le expliqué los puntos de arriba y <strong>me dio su consentimiento</strong> para grabar y transcribir esta entrevista.</span>
+    </label>
     <button type="submit">Transcribir</button>
   </form>
 </div>
@@ -17,7 +27,10 @@
   <h2>Entrevistas</h2>
   <ul>
     {% for e in entrevistas %}
-    <li><a href="/entrevista/{{ e.id }}">{{ e.titulo }}</a> — {{ e.persona or "sin nombre" }}</li>
+    <li>
+      <a href="/entrevista/{{ e.id }}">{{ e.titulo }}</a> — {{ e.persona or "sin nombre" }}
+      {% if e.consentimiento %}<span style="color:#4e6138;">· consentimiento registrado</span>{% endif %}
+    </li>
     {% endfor %}
   </ul>
 </div>

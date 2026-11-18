@@ -80,6 +80,7 @@ def transcribe_to_db(
     model_path: Path = DEFAULT_MODEL,
     titulo: str = "Entrevista",
     persona: str = "",
+    consentimiento: int = 1,
     language: str = "es",
 ) -> Dict[str, Any]:
     """Transcribe el audio y lo guarda en la DB. Devuelve la entrevista + segmentos."""
@@ -97,7 +98,7 @@ def transcribe_to_db(
         audio_path=str(audio_path),
         fecha=None,
         persona=persona,
-        consentimiento=0,
+        consentimiento=consentimiento,
     )
     for seg in segments:
         insert_segmento(

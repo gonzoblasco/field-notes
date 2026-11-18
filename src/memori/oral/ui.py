@@ -54,7 +54,23 @@ async def index(request: Request):
 
 
 @app.post("/transcribe", response_class=HTMLResponse)
-async def transcribe(request: Request, file: UploadFile = File(...), persona: str = ""):
+async def transcribe(
+    request: Request,
+    file: UploadFile = File(...),
+    persona: str = "",
+):
+    form = await request.form()
+    consentimiento = str(form.get("consentimiento", "0"))
+    if consentimiento != "1":
+        return HTMLResponse(
+            templates.get_template("error.html").render(
+                {
+                    "request": request,
+                    "error": "Falta el consentimiento. Sin la autorización de la persona no se graba nada.",
+                }
+            ),
+            status_code=400,
+        )
     if not (shutil.which("whisper-cli") and MODEL.is_file()):
         return HTMLResponse(
             templates.get_template("error.html").render(
@@ -72,6 +88,7 @@ async def transcribe(request: Request, file: UploadFile = File(...), persona: st
         model_path=MODEL,
         titulo=Path(file.filename or "entrevista").stem,
         persona=persona or "sin nombre",
+        consentimiento=1,
     )
     e, segs, huecos, conn = _entrevista(result["entrevista_id"])
     report = coverage_report(segs)
