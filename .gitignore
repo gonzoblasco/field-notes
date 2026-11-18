@@ -1,0 +1,10 @@
+data/private/
+output/
+audio/
+.env
+*.db
+__pycache__/
+.venv/
+models/
+*.16k.wav
+data/demo/out.json
