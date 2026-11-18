@@ -66,3 +66,26 @@ Dos muestras, dos fallas (ver `docs/audit-timestamps.md` §4). El prompt lo pide
 3. Medir `whisper-cli` por PID separado en la prueba de privacidad.
 
 Ninguno de los tres es un defecto del diseño. Son deudas de implementación, y están acotadas.
+
+---
+
+## 6. Re-verificación post-fix (2026-11-18, tarde)
+
+Los dos bloqueantes de §3 y §4 fueron corregidos y verificados.
+
+### Consentimiento
+- La UI exige el checkbox y el campo `persona`.
+- `POST /transcribe` sin `consentimiento=1` devuelve **400** con mensaje explícito.
+- Con `consentimiento=1` devuelve **200** y la fila en DB queda con `consentimiento=1`.
+- La página inicial explica qué se graba, dónde queda y cómo se borra.
+
+**Bug encontrado en el camino:** con FastAPI 0.164 + Starlette 1.10, un parámetro `str = "0"` junto a `File(...)` no se llena desde el multipart. Se resolvió leyendo el valor con `await request.form()`. Sin eso, el consentimiento válido se rechazaba.
+
+### Voseo
+Se agregaron cuatro ejemplos explícitos al system prompt y una prohibición de "tú/tienes/recuerdas".
+
+Resultado en la corrida siguiente:
+
+> «¿Qué hacés los domingos en Bahía Blanca cuando eras chico?»
+
+Voseo correcto en el verbo principal. Es una mejora medible, no una garantía: hacen falta más muestras para declararlo resuelto.
