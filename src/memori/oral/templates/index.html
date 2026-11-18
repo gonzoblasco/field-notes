@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2>Grabar una entrevista</h2>
+  <p>Subí el audio de una entrevista. Se transcribe en esta máquina; el audio no sale a ningún servidor.</p>
+  <form action="/transcribe" method="post" enctype="multipart/form-data">
+    <label for="file">Audio (wav, m4a, mp3)</label>
+    <input type="file" id="file" name="file" accept=".wav,.m4a,.mp3,.aiff" required>
+    <label for="persona">Nombre de la persona (opcional)</label>
+    <input type="text" id="persona" name="persona" placeholder="Abuela Rosa">
+    <button type="submit">Transcribir</button>
+  </form>
+</div>
+
+{% if entrevistas %}
+<div class="card">
+  <h2>Entrevistas</h2>
+  <ul>
+    {% for e in entrevistas %}
+    <li><a href="/entrevista/{{ e.id }}">{{ e.titulo }}</a> — {{ e.persona or "sin nombre" }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+{% endblock %}

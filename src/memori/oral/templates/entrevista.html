@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2>{{ e.titulo }}</h2>
+  <p><strong>Persona:</strong> {{ e.persona or "sin nombre" }} · <strong>Cobertura:</strong> {{ report.porcentaje }}%</p>
+
+  <h3>Relato</h3>
+  {% for s in segmentos %}
+  <div class="seg">
+    <span class="ts">{{ '%02d:%02d'|format(s.inicio_ms // 60000, (s.inicio_ms // 1000) % 60) }}–{{ '%02d:%02d'|format(s.fin_ms // 60000, (s.fin_ms // 1000) % 60) }}</span>
+    {{ s.texto }}
+  </div>
+  {% endfor %}
+</div>
+
+{% if huecos %}
+<div class="card">
+  <h3>Temas que quedaron abiertos</h3>
+  {% for h in huecos %}
+  <div class="hueco">
+    <strong>{{ h.categoria }}</strong><br>{{ h.descripcion }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if pregunta %}
+<div class="card">
+  <h3>Próxima pregunta</h3>
+  <p class="pregunta">“{{ pregunta.pregunta }}”</p>
+  <p class="ts">Motivo: {{ pregunta.por_que }} · categoría {{ pregunta.categoria }}</p>
+</div>
+{% endif %}
+
+<div class="card">
+  <form action="/export/{{ e.id }}" method="post">
+    <button type="submit">Exportar a Markdown</button>
+  </form>
+  <p class="ts">El archivo exportado se abre sin la app.</p>
+</div>
+
+<p><a href="/">← Volver</a></p>
+{% endblock %}

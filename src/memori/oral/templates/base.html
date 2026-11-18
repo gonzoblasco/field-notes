@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Memoria Oral</title>
+  <style>
+    :root { --papel:#f7f3ec; --tinta:#2b2b26; --oliva:#4e6138; --tenue:#8a8478; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--papel); color:var(--tinta);
+           font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    header { padding:1.4rem 2rem; border-bottom:1px solid #e2dbcd; display:flex;
+             justify-content:space-between; align-items:baseline; }
+    h1 { font-size:1.2rem; margin:0; letter-spacing:.02em; }
+    .badge { font-size:.75rem; color:var(--oliva); border:1px solid var(--oliva);
+             padding:.2rem .5rem; border-radius:999px; }
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1.5rem; }
+    .card { background:#fffdf8; border:1px solid #e2dbcd; border-radius:10px;
+            padding:1.25rem; margin-bottom:1.25rem; }
+    label { display:block; font-size:.85rem; color:var(--tenue); margin-bottom:.3rem; }
+    input[type=file], input[type=text] { width:100%; padding:.5rem; border:1px solid #d8d0c0;
+            border-radius:6px; background:#fff; margin-bottom:.9rem; }
+    button { background:var(--oliva); color:#fff; border:0; padding:.6rem 1.1rem;
+             border-radius:6px; font-size:.9rem; cursor:pointer; }
+    .seg { margin-bottom:.6rem; }
+    .ts { font-family: ui-monospace, monospace; font-size:.75rem; color:var(--tenue); }
+    .hueco { border-left:3px solid #a4512c; padding-left:.8rem; margin-bottom:.8rem; }
+    .pregunta { font-style:italic; font-size:1.05rem; }
+    ul { padding-left:1.1rem; }
+    a { color:var(--oliva); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Memoria Oral</h1>
+    <span class="badge">Local. Private. Yours.</span>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
