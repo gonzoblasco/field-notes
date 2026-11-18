@@ -8,3 +8,4 @@ __pycache__/
 models/
 *.16k.wav
 data/demo/out.json
+data/tmp*.wav
