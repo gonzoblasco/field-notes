@@ -4,7 +4,7 @@ install:
 	uv sync
 
 run:
-	PYTHONPATH=src uv run uvicorn memori.oral.ui:app --reload --port 8100
+	PYTHONPATH=src uv run python -m memori.oral.serve
 
 demo:
 	uv run python -m memori.oral.demo

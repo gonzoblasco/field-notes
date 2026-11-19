@@ -90,8 +90,23 @@ The model file is not in the repo (547 MB). The command above is the only downlo
 |---|---|---|
 | Transcription is fast enough | 5.5 s audio → 1.3 s compute | `docs/audit-timestamps.md` |
 | Timestamps match the audio | segment offsets verified against `afinfo` | idem |
-| No network during transcription | 9 `lsof` samples, 0 connections | `docs/privacy-check.md` |
+| No network during transcription | audit hook: 0 non-loopback sockets, with a positive control | `tests/test_privacy.py` |
 | The question targets a real gap | 3.6 s, theme `memories` for the detected gap | measured 2026-11-18 |
+
+## The privacy claim is tested, not asserted
+
+The first version of this claim was nine `lsof` samples taken on one laptop at one moment. That is an experiment: it proves what happened at 3pm, not what the code does.
+
+`tests/test_privacy.py` replaces it with four checks:
+
+1. **A socket audit hook.** `tests/privacy_probe.py` runs the real code paths in a subprocess under `sys.addaudithook` and records every `socket.connect`, `socket.getaddrinfo` and `socket.gethostbyname` that is not loopback. DNS counts: resolving a name is already traffic.
+2. **A positive control.** `test_probe_detects_a_simulated_leak` connects to `example.com` on purpose and fails if the hook does *not* catch it. A hook nobody has seen fire is not evidence.
+3. **A bind guard.** `make run` goes through `src/memori/oral/serve.py`, which refuses `--host 0.0.0.0` with exit code 2 instead of quietly accepting it.
+4. **The real code path, not a mock.** The probe ingests a segment, runs the checklist and searches the FTS index, so the thing being audited is what the user runs.
+
+Run only these: `uv run pytest -q tests/test_privacy.py`
+
+**What it does not cover, stated plainly.** The hook lives inside the Python process, so subprocesses are invisible to it — `whisper-cli` and `afconvert` are not audited, and neither is the Ollama daemon: if a requested model is missing, *Ollama* fetches it from the registry outside anything Python can see. Whisper and `afconvert` are local binaries with no network code; Ollama's registry fetch is why the model must be pulled before the first run.
 
 ## Limitations (honest list)
 
@@ -99,7 +114,7 @@ The model file is not in the repo (547 MB). The command above is the only downlo
 - **Consent is a checkbox, not a signature.** The database stores the flag; it is not a legal instrument.
 - **No diarization.** One speaker per file. Two-person interviews are out of scope.
 - **Single language per run.** English by default; the transcription language is configurable.
-- **The UI binds to loopback only.** Running it with `--host 0.0.0.0` would expose the archive to the network; that is deliberately not in the Makefile.
+- **The UI refuses to bind anywhere but loopback.** `make run` goes through a guard that exits with code 2 on `--host 0.0.0.0`; there is no flag to override it.
 - **The internal code keeps Spanish names** (`entrevistas`, `segmentos`, `huecos`). Renaming the schema was not worth the migration for a single-user tool; the interface is what matters.
 
 ## Repository layout
