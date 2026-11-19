@@ -1,35 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="card">
-  <h2>Antes de grabar</h2>
-  <p>Esta herramienta escucha a una persona contar su historia. Antes de empezar, leé esto en voz alta con ella:</p>
+  <h2>Before you record</h2>
+  <p>This tool listens to someone tell their story. Read this aloud with them before you start:</p>
   <ul>
-    <li>La grabación queda <strong>en esta computadora</strong>. No se sube a ningún servicio.</li>
-    <li>La transcripción es automática y puede tener errores. Ella puede corregir lo que quiera.</li>
-    <li>El texto final se lo lleva ella. Es su relato, no nuestro.</li>
-    <li>Se puede borrar todo en cualquier momento.</li>
+    <li>The recording stays <strong>on this computer</strong>. It is not uploaded to any service.</li>
+    <li>The transcript is automatic and can contain errors. They can correct whatever they want.</li>
+    <li>The final text belongs to them. It is their story, not ours.</li>
+    <li>Everything can be deleted at any time.</li>
   </ul>
   <form action="/transcribe" method="post" enctype="multipart/form-data">
     <label for="file">Audio (wav, m4a, mp3)</label>
     <input type="file" id="file" name="file" accept=".wav,.m4a,.mp3,.aiff" required>
-    <label for="persona">Nombre de la persona</label>
-    <input type="text" id="persona" name="persona" placeholder="Abuela Rosa" required>
+    <label for="persona">Name of the person</label>
+    <input type="text" id="persona" name="persona" placeholder="Rosa" required>
     <label style="display:flex;gap:.5rem;align-items:flex-start;margin-bottom:1rem;">
       <input type="checkbox" name="consentimiento" value="1" required style="width:auto;margin-top:.25rem;">
-      <span>Le expliqué los puntos de arriba y <strong>me dio su consentimiento</strong> para grabar y transcribir esta entrevista.</span>
+      <span>I explained the points above and they <strong>gave consent</strong> to record and transcribe this interview.</span>
     </label>
-    <button type="submit">Transcribir</button>
+    <button type="submit">Transcribe</button>
   </form>
 </div>
 
 {% if entrevistas %}
 <div class="card">
-  <h2>Entrevistas</h2>
+  <h2>Interviews</h2>
   <ul>
     {% for e in entrevistas %}
     <li>
-      <a href="/entrevista/{{ e.id }}">{{ e.titulo }}</a> — {{ e.persona or "sin nombre" }}
-      {% if e.consentimiento %}<span style="color:#4e6138;">· consentimiento registrado</span>{% endif %}
+      <a href="/entrevista/{{ e.id }}">{{ e.titulo }}</a> — {{ e.persona or "unnamed" }}
+      {% if e.consentimiento %}<span style="color:#4e6138;">· consent recorded</span>{% endif %}
     </li>
     {% endfor %}
   </ul>

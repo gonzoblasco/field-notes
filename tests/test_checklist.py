@@ -1,18 +1,27 @@
 from memori.oral.checklist import coverage_report, detect_gaps
 
 SEGMENTOS = [
-    {"inicio_ms": 0, "fin_ms": 3000, "texto": "Nací en Bahía Blanca, mi mamá cosía y mi papá trabajaba en el ferrocarril."},
-    {"inicio_ms": 3000, "fin_ms": 6000, "texto": "Recuerdo que en el barrio jugábamos hasta que oscurecía."},
+    {
+        "inicio_ms": 0,
+        "fin_ms": 3000,
+        "texto": "I was born in Bahia Blanca. My mother sewed for the neighbors and my father worked on the railway.",
+    },
+    {
+        "inicio_ms": 3000,
+        "fin_ms": 6000,
+        "texto": "I remember we played in the neighborhood until it got dark.",
+    },
 ]
 
 
 def test_detect_gaps_marks_missing_categories():
     gaps = detect_gaps(SEGMENTOS)
     categorias = {g["categoria"] for g in gaps}
-    assert "migración" in categorias
-    assert "niñez" not in categorias
-    assert "familia" not in categorias
-    assert "trabajo" not in categorias
+    assert "migration" in categorias
+    assert "childhood" not in categorias
+    assert "family" not in categorias
+    assert "work" not in categorias
+    assert "memories" not in categorias
 
 
 def test_coverage_report_percentages():

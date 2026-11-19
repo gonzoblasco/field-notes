@@ -30,7 +30,7 @@ def convert_to_wav(src: Path, dst: Path) -> Path:
 def run_whisper(
     wav_path: Path,
     model_path: Path = DEFAULT_MODEL,
-    language: str = "es",
+    language: str = "en",
 ) -> Dict[str, Any]:
     """Corre whisper-cli y devuelve el JSON parseado."""
     if not shutil.which("whisper-cli"):
@@ -81,7 +81,7 @@ def transcribe_to_db(
     titulo: str = "Entrevista",
     persona: str = "",
     consentimiento: int = 1,
-    language: str = "es",
+    language: str = "en",
 ) -> Dict[str, Any]:
     """Transcribe el audio y lo guarda en la DB. Devuelve la entrevista + segmentos."""
     audio_path = Path(audio_path)
@@ -122,7 +122,7 @@ def main() -> None:
         titulo=audio.stem,
         persona="Demo",
     )
-    print(f"Entrevista #{result['entrevista_id']}: {len(result['segmentos'])} segmentos")
+    print(f"Interview #{result['entrevista_id']}: {len(result['segmentos'])} segments")
     for seg in result["segmentos"]:
         print(f"  [{seg['inicio_ms']}ms - {seg['fin_ms']}ms] {seg['texto']}")
 

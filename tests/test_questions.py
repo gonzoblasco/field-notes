@@ -3,10 +3,10 @@ from unittest.mock import patch
 from memori.oral.questions import propose_question
 
 HUECOS = [
-    {"categoria": "migración", "descripcion": "El relato no menciona nada de migración.", "cubierto": 0},
-    {"categoria": "recuerdos", "descripcion": "El relato no menciona nada de recuerdos.", "cubierto": 0},
+    {"categoria": "migration", "descripcion": "The story does not mention migration.", "cubierto": 0},
+    {"categoria": "memories", "descripcion": "The story does not mention memories.", "cubierto": 0},
 ]
-SEGMENTOS = [{"texto": "Nací en Bahía Blanca en el 42."}]
+SEGMENTOS = [{"texto": "I was born in Bahia Blanca in 1942."}]
 
 
 def _fake(payload: dict):
@@ -17,14 +17,14 @@ def _fake(payload: dict):
 
 def test_propose_question_returns_structured():
     payload = {
-        "pregunta": "¿Y cómo fue ese viaje desde Bahía Blanca hasta acá?",
-        "categoria": "migración",
-        "por_que": "no contó cómo llegó",
+        "pregunta": "How did you end up moving from Bahia Blanca to Buenos Aires?",
+        "categoria": "migration",
+        "por_que": "they never said how they got here",
     }
     with patch("memori.oral.questions.ollama.chat", return_value=_fake(payload)):
         out = propose_question(HUECOS, SEGMENTOS)
-    assert out["pregunta"].startswith("¿")
-    assert out["categoria"] == "migración"
+    assert out["pregunta"].endswith("?")
+    assert out["categoria"] == "migration"
     assert out["por_que"]
 
 

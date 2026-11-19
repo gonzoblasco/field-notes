@@ -1,4 +1,4 @@
-"""Agente que propone la próxima pregunta a partir de los huecos."""
+"""Interviewer agent: turns a coverage gap into the next question."""
 
 from __future__ import annotations
 
@@ -8,41 +8,34 @@ from typing import Any, Dict, List
 
 import ollama
 
-MODEL = os.environ.get("MEMORIA_ORAL_MODEL", "qwen3:4b-instruct-2507-q4_K_M")
+MODEL = os.environ.get("FIELD_NOTES_MODEL", "qwen3:4b-instruct-2507-q4_K_M")
+LANGUAGE = os.environ.get("FIELD_NOTES_LANG", "en")
 
 _SYSTEM = (
-    "Sos un entrevistador que ayuda a una persona mayor a contar su historia. "
-    "Recibís los huecos de una entrevista y proponés UNA sola pregunta de seguimiento. "
-    "Reglas: español rioplatense con voseo; tono cálido y respetuoso; "
-    "una pregunta abierta y concreta; nunca des consejos ni interpretes; "
-    "nunca inventes datos que la persona no dijo. "
-    "Devolvé JSON con: pregunta (str), categoria (str), por_que (str, máx 20 palabras).\n\n"
-    "El voseo es obligatorio. Ejemplos del registro correcto:\n"
-    "- ¿Qué recordás de tu barrio?\n"
-    "- ¿Cómo era tu casa cuando eras chico?\n"
-    "- ¿Tenés algún recuerdo de ese viaje?\n"
-    "- ¿Qué hacías los domingos?\n"
-    "Nunca uses 'tú', 'tienes', 'recuerdas', 'haces' ni 'eras' con 'tú'. "
-    "Usá 'vos', 'tenés', 'recordás', 'hacés'."
+    "You are an interviewer helping an older person tell their life story. "
+    "You receive the gaps in an interview so far and you propose ONE follow-up question. "
+    "Rules: warm and respectful tone; one open, concrete question; never give advice and never interpret; "
+    "never invent details the person did not say. "
+    "Return JSON with: pregunta (str), categoria (str), por_que (str, max 20 words)."
 )
 
 
 def _prompt(huecos: List[Dict[str, Any]], contexto: str) -> str:
     huecos_txt = "\n".join(f"- {h['categoria']}: {h['descripcion']}" for h in huecos)
     return (
-        f"Lo que la persona ya contó (resumen textual):\n{contexto}\n\n"
-        f"Temas que no aparecieron:\n{huecos_txt}\n\n"
-        "Elegí el hueco más importante para la historia de vida y proponé la próxima pregunta."
+        f"What the person has already told us (verbatim excerpt):\n{contexto}\n\n"
+        f"Themes that have not come up:\n{huecos_txt}\n\n"
+        "Pick the gap that matters most for a life story and propose the next question."
     )
 
 
 def propose_question(huecos: List[Dict[str, Any]], segmentos: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Devuelve {pregunta, categoria, por_que} a partir de los huecos."""
+    """Return {pregunta, categoria, por_que} grounded in the detected gaps."""
     if not huecos:
         return {
-            "pregunta": "¿Hay algo más que quieras contarme que no te haya preguntado?",
+            "pregunta": "Is there anything else you would like to tell me that I have not asked about?",
             "categoria": "cierre",
-            "por_que": "no quedan huecos en el checklist",
+            "por_que": "no gaps left in the checklist",
         }
 
     contexto = " ".join(s.get("texto", "") for s in segmentos)[-1500:]
@@ -59,11 +52,11 @@ def propose_question(huecos: List[Dict[str, Any]], segmentos: List[Dict[str, Any
     try:
         data = json.loads(content)
     except json.JSONDecodeError as exc:
-        raise RuntimeError(f"El modelo no devolvió JSON válido: {content[:200]}") from exc
+        raise RuntimeError(f"The model did not return valid JSON: {content[:200]}") from exc
 
     pregunta = (data.get("pregunta") or "").strip()
     if not pregunta:
-        raise RuntimeError("El modelo devolvió una pregunta vacía")
+        raise RuntimeError("The model returned an empty question")
 
     categorias = {h["categoria"] for h in huecos}
     categoria = data.get("categoria") if data.get("categoria") in categorias else huecos[0]["categoria"]

@@ -1,6 +1,6 @@
-# Memoria Oral — local oral history
+# Field Notes — local oral history
 
-A local-first AI agent that records family interviews, transcribes them on your own machine, finds the gaps in the story, and asks the next question.
+A local-first agent that records family interviews, transcribes them on your own machine, finds the gaps in the story, and asks the next question.
 
 No cloud. No API keys. The voices never leave the laptop.
 
@@ -16,7 +16,7 @@ A voice is the one thing in a family archive that cannot be recovered. If it lea
 
 Commercial transcription services solve the text problem and create a privacy problem: your family's voice recordings get processed by subprocessors in another jurisdiction (Otter, for example, [lists AWS US, Anthropic and OpenAI](https://otter.ai/subprocessors)).
 
-Memoria Oral keeps the whole pipeline on the interviewer's machine.
+Field Notes keeps the whole pipeline on the interviewer's machine.
 
 ## What it does
 
@@ -39,7 +39,7 @@ Every AI component is load-bearing:
 This is not a cost argument. It is a consent argument.
 
 - **The audio never leaves the machine.** Verified with `lsof`: 0 sockets during transcription (`docs/privacy-check.md`).
-- **The model can be swapped.** If a better Spanish model appears, it is a config change, not a migration.
+- **The model can be swapped.** If a better interviewer model appears, it is a config change, not a migration.
 - **Nothing is rented.** The archive still opens in ten years, on a laptop, without a subscription.
 - **The pipeline is auditable.** Every claim in `docs/` can be re-run.
 
@@ -57,10 +57,12 @@ Approved before writing code, and enforced in the UI:
 | Layer | Choice | Why |
 |---|---|---|
 | Speech | `whisper.cpp` 1.9.5 + `ggml-large-v3-turbo-q5_0` (547 MB) | MIT, ~4.4× real time measured |
-| LLM | Ollama + `qwen3:4b-instruct-2507-q4_K_M` | Apache-2.0, 4.5 s per question measured |
+| LLM | Ollama + `qwen3:4b-instruct-2507-q4_K_M` | Apache-2.0, 3.6 s per question measured |
 | Store | SQLite + FTS5 | One file, no server |
 | UI | FastAPI + Jinja2, one screen, `127.0.0.1` | No Electron, no build step |
 | Language | Python 3.11+ | Audio ecosystem |
+
+The product speaks English: the interface, the interviewer prompt, the checklist and the transcription language. The code keeps Spanish identifiers internally; they are not user-visible.
 
 ## Quickstart
 
@@ -86,27 +88,26 @@ The model file is not in the repo (547 MB). The command above is the only downlo
 
 | Claim | Measurement | Where |
 |---|---|---|
-| Transcription is fast enough | 7.1 s audio → 1.63 s compute (4.4× real time) | `docs/audit-timestamps.md` |
-| Timestamps match the audio | segment 0–6760 ms vs `afinfo` 7125 ms (remaining is silence) | idem |
-| Transcription is accurate | word-for-word match on the demo, except "cuarenta y dos" → "42" | idem |
+| Transcription is fast enough | 5.5 s audio → 1.3 s compute | `docs/audit-timestamps.md` |
+| Timestamps match the audio | segment offsets verified against `afinfo` | idem |
 | No network during transcription | 9 `lsof` samples, 0 connections | `docs/privacy-check.md` |
-| The question targets a real gap | category validated against the gap set | `docs/audit-timestamps.md` §3 |
+| The question targets a real gap | 3.6 s, theme `memories` for the detected gap | measured 2026-11-18 |
 
 ## Limitations (honest list)
 
-- **Voseo is inconsistent.** The prompt asks for Rioplatense Spanish and gives examples; the 4B model still slips into "tú" forms sometimes. Measured twice wrong, once right. A larger model or a fine-tune would fix it; the project does not claim it is solved.
-- **The bundled demo audio is synthetic** (`say -v Paulina`). It proves the pipeline, not the accuracy on real elders, accents, or background noise.
+- **The bundled demo audio is synthetic** (`say -v Samantha`). It proves the pipeline, not the accuracy on real elders, accents, or background noise.
 - **Consent is a checkbox, not a signature.** The database stores the flag; it is not a legal instrument.
 - **No diarization.** One speaker per file. Two-person interviews are out of scope.
-- **Single language per run.** Spanish by default.
+- **Single language per run.** English by default; the transcription language is configurable.
 - **The UI binds to loopback only.** Running it with `--host 0.0.0.0` would expose the archive to the network; that is deliberately not in the Makefile.
+- **The internal code keeps Spanish names** (`entrevistas`, `segmentos`, `huecos`). Renaming the schema was not worth the migration for a single-user tool; the interface is what matters.
 
 ## Repository layout
 
 ```
 src/memori/oral/
   transcribe.py   whisper.cpp wrapper, WAV conversion, DB insert
-  db.py           SQLite schema (entrevistas, segmentos, huecos) + FTS5
+  db.py           SQLite schema + FTS5
   checklist.py    coverage detection against a configured checklist
   questions.py    local LLM that turns a gap into a question
   export_md.py    Markdown export
@@ -121,7 +122,6 @@ docs/
 ## Origin and credits
 
 - **Challenge:** [DEV.to — Hacktoberfest 2026, Week 4: Ghost in the Machine](https://dev.to/challenges/hacktoberfest-week4-2026-10-26). Prompt: *build something spooky, or something that honors the past, with open-source AI at its core.*
-- **Feasibility research:** internal brief comparing local STT options, licences, and model sizes. Its findings are summarized in the Evidence and Limitations sections.
 - **Models:** [whisper.cpp](https://github.com/ggerganov/whisper.cpp) (MIT) and [Qwen3-4B-Instruct-2507](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507) (Apache-2.0).
 - **Build process:** planned with a step-based planner, implemented by separate role agents (developer, designer, auditor, critic), and every claim in `docs/` was verified against the running code rather than accepted from a self-report.
 

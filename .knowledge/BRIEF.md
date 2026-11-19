@@ -1,4 +1,4 @@
-# BRIEF — Memoria Oral
+# BRIEF — Field Notes
 
 ## Objetivo
 Construir un MVP que grabe entrevistas, las transcriba 100 % en local, detecte huecos en el relato y haga la siguiente pregunta, con export a Markdown.

@@ -2,9 +2,9 @@
 {% block content %}
 <div class="card">
   <h2>{{ e.titulo }}</h2>
-  <p><strong>Persona:</strong> {{ e.persona or "sin nombre" }} · <strong>Cobertura:</strong> {{ report.porcentaje }}%</p>
+  <p><strong>Person:</strong> {{ e.persona or "unnamed" }} · <strong>Coverage:</strong> {{ report.porcentaje }}%</p>
 
-  <h3>Relato</h3>
+  <h3>Story</h3>
   {% for s in segmentos %}
   <div class="seg">
     <span class="ts">{{ '%02d:%02d'|format(s.inicio_ms // 60000, (s.inicio_ms // 1000) % 60) }}–{{ '%02d:%02d'|format(s.fin_ms // 60000, (s.fin_ms // 1000) % 60) }}</span>
@@ -15,7 +15,7 @@
 
 {% if huecos %}
 <div class="card">
-  <h3>Temas que quedaron abiertos</h3>
+  <h3>Themes left open</h3>
   {% for h in huecos %}
   <div class="hueco">
     <strong>{{ h.categoria }}</strong><br>{{ h.descripcion }}
@@ -26,18 +26,18 @@
 
 {% if pregunta %}
 <div class="card">
-  <h3>Próxima pregunta</h3>
+  <h3>Next question</h3>
   <p class="pregunta">“{{ pregunta.pregunta }}”</p>
-  <p class="ts">Motivo: {{ pregunta.por_que }} · categoría {{ pregunta.categoria }}</p>
+  <p class="ts">Why: {{ pregunta.por_que }} · theme {{ pregunta.categoria }}</p>
 </div>
 {% endif %}
 
 <div class="card">
   <form action="/export/{{ e.id }}" method="post">
-    <button type="submit">Exportar a Markdown</button>
+    <button type="submit">Export to Markdown</button>
   </form>
-  <p class="ts">El archivo exportado se abre sin la app.</p>
+  <p class="ts">The exported file opens without the app.</p>
 </div>
 
-<p><a href="/">← Volver</a></p>
+<p><a href="/">← Back</a></p>
 {% endblock %}
