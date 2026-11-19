@@ -1,4 +1,4 @@
-"""Database layer for memoria-oral using SQLite with FTS5.
+"""Database layer for Field Notes using SQLite with FTS5.
 
 The schema includes three main tables:
 

@@ -2,8 +2,8 @@
 
 ## Estado: MVP cerrado, repo publico
 
-- Repo: https://github.com/gonzoblasco/memoria-oral (MIT, publico)
-- Programa `memoria-oral`: 9/9 pasos cerrados. 8 tests verdes.
+- Repo: https://github.com/gonzoblasco/field-notes (MIT, publico)
+- Programa `field-notes`: 9/9 pasos cerrados. 8 tests verdes.
 - Stack: whisper.cpp 1.9.5 + ggml-large-v3-turbo-q5_0 (547 MB) + Ollama + qwen3:4b-instruct-2507 (Apache-2.0) + SQLite/FTS5 + FastAPI.
 
 ## Verificado
@@ -23,7 +23,7 @@
 ## Como retomar
 
 ```bash
-cd projects/memoria-oral
+cd projects/field-notes
 uv sync
 uv run pytest -q
 PYTHONPATH=src uv run uvicorn memori.oral.ui:app --port 8100

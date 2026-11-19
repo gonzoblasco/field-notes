@@ -54,7 +54,7 @@ El prompt pide voseo explícitamente. El modelo no lo cumple de forma consistent
 ## 5. Evidencia reproducible
 
 ```bash
-cd projects/memoria-oral
+cd projects/field-notes
 PYTHONPATH=src uv run python -m memori.oral.transcribe data/demo/entrevista-demo.wav
 PYTHONPATH=src uv run python -c "import json; d=json.load(open('data/demo/out.json')); print(d['transcription'][0]['offsets'])"
 afinfo data/demo/entrevista-demo.wav | grep duration
